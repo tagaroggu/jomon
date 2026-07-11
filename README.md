@@ -12,7 +12,7 @@ Jomon pottery-/Sheikah-inspired pattern image generator
   - [x] Stroke width
   - [x] Density minimum and maximum (range of how many circles to include)  
   - [x] Random seed for srand and rand functions
-- [ ] Implement random generator of circles (position and radius/diameter)
+- [x] Implement random generator of circles (position and radius/diameter)
 - [ ] Implement shader-like function for determining the pixels
   - [ ] Determine a given pixel's distance to the center of a circle and if the pixel is within that circle,
     - [ ] If within the circle, use distance to determine pixel color

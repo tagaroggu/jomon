@@ -44,7 +44,18 @@
 #endif
 
 #ifndef DEFAULT_FILE_NAME
-#define DEFAULT_FILE_NAME ({ char timeStr[256]; snprintf(timeStr, 256, "%lu", time(NULL)); size_t strLen = strlen(timeStr) +  13; char *_temp = (char*)malloc(sizeof(char) * strLen); snprintf(_temp, strLen, "./jomon-%s.ppm", timeStr); _temp; })
+#define DEFAULT_FILE_NAME ({ char timeStr[256]; \
+  snprintf(timeStr, 256, "%lu", time(NULL)); \
+  size_t strLen = strlen(timeStr) +  13; char *_temp = (char*)malloc(sizeof(char) * strLen); \
+  snprintf(_temp, strLen, "./jomon-%s.ppm", timeStr); _temp; })
+#endif
+
+#ifndef DEFAULT_MIN_RADIUS
+#define DEFAULT_MIN_RADIUS 3
+#endif
+
+#ifndef DEFAULT_MAX_RADIUS
+#define DEFAULT_MAX_RADIUS 12
 #endif
 
 struct Color {
@@ -59,11 +70,7 @@ struct ColorBuffer {
   struct Color pixels[];
 };
 
-struct CoordPairs {
-  size_t length;
-  size_t pairs[];
-};
-
+// TODO: change ColorBuffer to pointer to Color instead of array, refactor the below code to handle it.
 struct ColorBuffer *createImageBuffer(size_t width, size_t height) {
   struct ColorBuffer *output = (struct ColorBuffer *)malloc(
       sizeof(struct ColorBuffer) + (sizeof(struct Color) * width * height) -
@@ -99,6 +106,8 @@ struct Args {
   size_t width;
   unsigned int minDensity;
   unsigned int maxDensity;
+  unsigned int minRadius;
+  unsigned int maxRadius;
   unsigned int strokeWidth;
   struct Color darkColor;
   struct Color lightColor;
@@ -113,6 +122,8 @@ struct Args createDefaultArgs() {
     .width = DEFAULT_WIDTH,
     .minDensity = DEFAULT_MIN_DENSITY,
     .maxDensity = DEFAULT_MAX_DENSITY,
+    .minRadius = DEFAULT_MIN_RADIUS,
+    .maxRadius = DEFAULT_MAX_RADIUS,
     .darkColor = DEFAULT_BG_COLOR,
     .lightColor = DEFAULT_FG_COLOR,
     .seed = (uint64_t)time(NULL),
@@ -127,6 +138,8 @@ struct Args createDefaultArgs() {
 // w: width
 // d: min density
 // D: max density
+// r: min radius
+// R: max radius
 // s: seed
 // S: stroke width
 // c: dark color
@@ -157,6 +170,12 @@ struct Args parseCLIArgs(int argc, char **argv) {
       case 'S':
         args.strokeWidth = atoi(optarg);
         break;
+      case 'r':
+        args.minRadius = atoi(optarg);
+        break;
+      case 'R':
+        args.maxRadius = atoi(optarg);
+        break;
       case 'c': {
         uint32_t _temp = strtol(optarg, NULL, 16);
         args.darkColor.red = (uint8_t)(_temp >> 16);
@@ -183,6 +202,34 @@ struct Args parseCLIArgs(int argc, char **argv) {
   return args;
 }
 
+struct Circle {
+  size_t x;
+  size_t y;
+  unsigned int radius;
+};
+
+struct CircleBuffer {
+  size_t length;
+  struct Circle *firstCircle;
+};
+
+struct CircleBuffer generateCircles(struct Args args) {
+  struct CircleBuffer cb = (struct CircleBuffer){ 0 };
+
+  cb.length = (rand() % (args.maxDensity + 1 - args.minDensity)) + args.minDensity;
+
+  struct Circle *buffer = (struct Circle*)malloc(sizeof(struct Circle) * cb.length);
+
+  for (int i = 0; i < cb.length; i++) {
+    buffer[i].x = rand() % args.width;
+    buffer[i].y = rand() % args.height;
+    buffer[i].radius = (rand() % (args.maxRadius + 1 - args.minRadius)) + args.minRadius;
+  }
+
+  cb.firstCircle = buffer;
+
+  return cb;
+}
 
 
 #ifndef JOMON_LIBRARY
@@ -197,12 +244,20 @@ int main(int argc, char *argv[]) {
     printf("strokeWidth: %i\n", args.strokeWidth);
     printf("Dark color: 0x%02X%02X%02X\n", args.darkColor.red, args.darkColor.green, args.darkColor.blue);
     printf("Light color: 0x%02X%02X%02X\n", args.lightColor.red, args.lightColor.green, args.lightColor.blue);
-    printf("outfile: %s\n", args.outfile == NULL ? "NULL" : args.outfile);
+    printf("outfile: %s\n", args.outfile);
   }
-  exit(1);
 
   srand(args.seed);
 
+  struct CircleBuffer circleBuffer = generateCircles(args);
+
+  if (args.verbose) {
+    for (int i = 0; i < circleBuffer.length; i++) {
+      printf("Circle #%i: (%zu, %zu) and radius %i\n", i, circleBuffer.firstCircle[i].x, circleBuffer.firstCircle[i].y, circleBuffer.firstCircle[i].radius);
+    }
+  }
+
+  exit(1);
   return 0;
 }
 
