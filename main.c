@@ -231,6 +231,23 @@ struct CircleBuffer generateCircles(struct Args args) {
   return cb;
 }
 
+int compareCircles(const void *A, const void *B) {
+  struct Circle cA = *(struct Circle*)A;
+  struct Circle cB = *(struct Circle*)B;
+
+  if (cA.radius > cB.radius) {
+    return 1;
+  } else if (cA.radius < cB.radius) {
+    return -1;
+  } else {
+    return 0;
+  }
+}
+
+void sortCircles(struct CircleBuffer *cb) {
+  qsort(cb->firstCircle, cb->length, sizeof(struct Circle), compareCircles);
+}
+
 
 #ifndef JOMON_LIBRARY
 
@@ -250,6 +267,7 @@ int main(int argc, char *argv[]) {
   srand(args.seed);
 
   struct CircleBuffer circleBuffer = generateCircles(args);
+  sortCircles(&circleBuffer);
 
   if (args.verbose) {
     for (int i = 0; i < circleBuffer.length; i++) {
