@@ -6,7 +6,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
+#include <string.h>
+#include <inttypes.h>
 
 #ifndef DEFAULT_WIDTH
 #define DEFAULT_WIDTH 1920
@@ -28,6 +31,22 @@
 #define DEFAULT_FG_COLOR (struct Color){255, 255, 255}
 #endif
 
+#ifndef DEFAULT_MIN_DENSITY
+#define DEFAULT_MIN_DENSITY 5
+#endif
+
+#ifndef DEFAULT_MAX_DENSITY
+#define DEFAULT_MAX_DENSITY 20
+#endif
+
+#ifndef DEFAULT_SEED
+#define DEFAULT_SEED time(NULL)
+#endif
+
+#ifndef DEFAULT_FILE_NAME
+#define DEFAULT_FILE_NAME ({ char timeStr[256]; snprintf(timeStr, 256, "%lu", time(NULL)); size_t strLen = strlen(timeStr) +  13; char *_temp = (char*)malloc(sizeof(char) * strLen); snprintf(_temp, strLen, "./jomon-%s.ppm", timeStr); _temp; })
+#endif
+
 struct Color {
   uint8_t red;
   uint8_t green;
@@ -38,6 +57,11 @@ struct ColorBuffer {
   size_t width;
   size_t height;
   struct Color pixels[];
+};
+
+struct CoordPairs {
+  size_t length;
+  size_t pairs[];
 };
 
 struct ColorBuffer *createImageBuffer(size_t width, size_t height) {
@@ -70,10 +94,114 @@ char *convertBufferToPPM(struct ColorBuffer *buffer) {
   return NULL;
 }
 
+struct Args {
+  size_t height;
+  size_t width;
+  unsigned int minDensity;
+  unsigned int maxDensity;
+  unsigned int strokeWidth;
+  struct Color darkColor;
+  struct Color lightColor;
+  uint64_t seed;
+  char *outfile;
+  uint8_t verbose;
+};
+
+struct Args createDefaultArgs() {
+  return (struct Args){
+    .height = DEFAULT_HEIGHT,
+    .width = DEFAULT_WIDTH,
+    .minDensity = DEFAULT_MIN_DENSITY,
+    .maxDensity = DEFAULT_MAX_DENSITY,
+    .darkColor = DEFAULT_BG_COLOR,
+    .lightColor = DEFAULT_FG_COLOR,
+    .seed = (uint64_t)time(NULL),
+    .strokeWidth = DEFAULT_STROKE_WIDTH,
+    .outfile = DEFAULT_FILE_NAME,
+    .verbose = 0
+  };
+}
+
+// Flags:
+// h: height
+// w: width
+// d: min density
+// D: max density
+// s: seed
+// S: stroke width
+// c: dark color
+// C: light color
+// o: outfile
+struct Args parseCLIArgs(int argc, char **argv) {
+  struct Args args = createDefaultArgs();
+
+  int c;
+
+  while ((c = getopt(argc, argv, "h:w:d:D:s:S:c:C:o:v")) != -1) {
+    switch (c) {
+      case 'h':
+        args.height = atoi(optarg);
+        break;
+      case 'w':
+        args.width = atoi(optarg);
+        break;
+      case 'd':
+        args.minDensity = atoi(optarg);
+        break;
+      case 'D':
+        args.maxDensity = atoi(optarg);
+        break;
+      case 's':
+        args.seed = atoi(optarg);
+        break;
+      case 'S':
+        args.strokeWidth = atoi(optarg);
+        break;
+      case 'c': {
+        uint32_t _temp = strtol(optarg, NULL, 16);
+        args.darkColor.red = (uint8_t)(_temp >> 16);
+        args.darkColor.green = (uint8_t)(_temp >> 8);
+        args.darkColor.blue = (uint8_t)_temp;
+        };
+        break;
+      case 'C': {
+        uint32_t _temp = strtol(optarg, NULL, 16);
+        args.lightColor.red = (uint8_t)(_temp >> 16);
+        args.lightColor.green = (uint8_t)(_temp >> 8);
+        args.lightColor.blue = (uint8_t)_temp;
+        };
+        break;
+      case 'o':
+        free(args.outfile);
+        args.outfile = strdup(optarg);
+        break;
+      case 'v':
+        args.verbose = 1;
+    }
+  }
+
+  return args;
+}
+
+
+
 #ifndef JOMON_LIBRARY
 
 int main(int argc, char *argv[]) {
+  struct Args args = parseCLIArgs(argc, argv);
+
+  if (args.verbose) {
+  printf("Dimensions: %zux%zu\n", args.height, args.width);
+  printf("Density range: %i-%i\n", args.minDensity, args.maxDensity);
+  printf("seed: %" PRId64 "\n", args.seed);
+  printf("strokeWidth: %i\n", args.strokeWidth);
+  printf("Dark color: 0x%02X%02X%02X\n", args.darkColor.red, args.darkColor.green, args.darkColor.blue);
+  printf("Light color: 0x%02X%02X%02X\n", args.lightColor.red, args.lightColor.green, args.lightColor.blue);
+  printf("outfile: %s\n", args.outfile == NULL ? "NULL" : args.outfile);
+  }
   exit(1);
+
+  srand(args.seed);
 
   return 0;
 }

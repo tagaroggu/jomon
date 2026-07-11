@@ -4,14 +4,14 @@ Jomon pottery-/Sheikah-inspired pattern image generator
 
 ## Todos
 
-- [ ] Allow command line arguments to be passed, with defaults for not passing them
-  - [ ] Height and width
-  - [ ] Dark and Light colors
-  - [ ] Output file name
+- [x] Allow command line arguments to be passed, with defaults for not passing them
+  - [x] Height and width
+  - [x] Dark and Light colors
+  - [x] Output file name
       - [ ] (Maybe) also allow outputting to stdout
-  - [ ] Stroke width
-  - [ ] Density minimum and maximum (range of how many circles to include)  
-  - [ ] Random seed for srand and rand functions
+  - [x] Stroke width
+  - [x] Density minimum and maximum (range of how many circles to include)  
+  - [x] Random seed for srand and rand functions
 - [ ] Implement random generator of circles (position and radius/diameter)
 - [ ] Implement shader-like function for determining the pixels
   - [ ] Determine a given pixel's distance to the center of a circle and if the pixel is within that circle,
