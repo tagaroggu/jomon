@@ -1,3 +1,8 @@
+/* TODO: Implementation of the whole thing. Write a function that is run for
+ * each pixel that checks whether its within the area of a circle and if so its
+ * distance to the center and therefore the pixel's color, otherwise which
+ * column it is in and which color to match the column that it is in.
+ */
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,8 +70,12 @@ char *convertBufferToPPM(struct ColorBuffer *buffer) {
   return NULL;
 }
 
+#ifndef JOMON_LIBRARY
+
 int main(int argc, char *argv[]) {
   exit(1);
 
   return 0;
 }
+
+#endif
