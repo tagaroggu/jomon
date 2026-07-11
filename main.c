@@ -67,18 +67,15 @@ struct Color {
 struct ColorBuffer {
   size_t width;
   size_t height;
-  struct Color pixels[];
+  struct Color *pixels;
 };
 
-// TODO: change ColorBuffer to pointer to Color instead of array, refactor the below code to handle it.
-struct ColorBuffer *createImageBuffer(size_t width, size_t height) {
-  struct ColorBuffer *output = (struct ColorBuffer *)malloc(
-      sizeof(struct ColorBuffer) + (sizeof(struct Color) * width * height) -
-      sizeof(struct Color));
-  output->width = width;
-  output->height = height;
-
-  return output;
+struct ColorBuffer createImageBuffer(size_t width, size_t height) {
+  return (struct ColorBuffer){
+    .width = width,
+    .height = height,
+    .pixels = (struct Color*)malloc(sizeof(struct Color) * width * height)
+  };
 }
 
 struct Color *getColorAtIndex(struct ColorBuffer *buffer, size_t index) {
@@ -87,8 +84,7 @@ struct Color *getColorAtIndex(struct ColorBuffer *buffer, size_t index) {
   return &buffer->pixels[index];
 }
 
-struct Color *getColorAtCoordinates(struct ColorBuffer *buffer, size_t x,
-                                    size_t y) {
+struct Color *getColorAtCoordinates(struct ColorBuffer *buffer, size_t x, size_t y) {
   if (x < 0 || y < 0 || x >= buffer->width || y >= buffer->height)
     return NULL;
   return getColorAtIndex(buffer, x + (y * buffer->width));
