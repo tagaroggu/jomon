@@ -8,7 +8,9 @@ Jomon pottery-/Sheikah-inspired pattern image generator
   - [ ] Height and width
   - [ ] Dark and Light colors
   - [ ] Output file name
-    - [ ] (Maybe) also allow outputting to stdout
+      - [ ] (Maybe) also allow outputting to stdout
+  - [ ] Stroke width
+  - [ ] Density minimum and maximum (range of how many circles to include)  
   - [ ] Random seed for srand and rand functions
 - [ ] Implement random generator of circles (position and radius/diameter)
 - [ ] Implement shader-like function for determining the pixels
@@ -28,3 +30,4 @@ Jomon pottery-/Sheikah-inspired pattern image generator
 - Run pixel function for each pixel
 - Generate final PPM file data from buffer and some metadata
 - Put PPM file data into where it belongs
+- Print to stdout the filename (unless output is put to stdout)
