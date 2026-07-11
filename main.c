@@ -191,13 +191,13 @@ int main(int argc, char *argv[]) {
   struct Args args = parseCLIArgs(argc, argv);
 
   if (args.verbose) {
-  printf("Dimensions: %zux%zu\n", args.height, args.width);
-  printf("Density range: %i-%i\n", args.minDensity, args.maxDensity);
-  printf("seed: %" PRId64 "\n", args.seed);
-  printf("strokeWidth: %i\n", args.strokeWidth);
-  printf("Dark color: 0x%02X%02X%02X\n", args.darkColor.red, args.darkColor.green, args.darkColor.blue);
-  printf("Light color: 0x%02X%02X%02X\n", args.lightColor.red, args.lightColor.green, args.lightColor.blue);
-  printf("outfile: %s\n", args.outfile == NULL ? "NULL" : args.outfile);
+    printf("Dimensions: %zux%zu\n", args.height, args.width);
+    printf("Density range: %i-%i\n", args.minDensity, args.maxDensity);
+    printf("seed: %" PRId64 "\n", args.seed);
+    printf("strokeWidth: %i\n", args.strokeWidth);
+    printf("Dark color: 0x%02X%02X%02X\n", args.darkColor.red, args.darkColor.green, args.darkColor.blue);
+    printf("Light color: 0x%02X%02X%02X\n", args.lightColor.red, args.lightColor.green, args.lightColor.blue);
+    printf("outfile: %s\n", args.outfile == NULL ? "NULL" : args.outfile);
   }
   exit(1);
 
