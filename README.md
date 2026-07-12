@@ -2,6 +2,8 @@
 
 Jomon pottery-/Sheikah-inspired pattern image generator
 
+![Example image of Jomon output](./example.png)
+
 ## Todos
 
 - [x] Allow command line arguments to be passed, with defaults for not passing them

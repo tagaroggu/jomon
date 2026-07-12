@@ -11,3 +11,4 @@ jomon
 *.jpg
 *.webp
 *.gif
+!example.png
