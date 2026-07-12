@@ -393,6 +393,10 @@ int main(int argc, char *argv[]) {
   
   fclose(file);
 
+  if (!args.toStdout) {
+    printf("%s", args.outfile);
+  }
+
   return 0;
 }
 
