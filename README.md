@@ -10,7 +10,7 @@ Jomon pottery-/Sheikah-inspired pattern image generator
   - [x] Height and width
   - [x] Dark and Light colors
   - [x] Output file name
-      - [ ] (Maybe) also allow outputting to stdout
+      - [x] (Maybe) also allow outputting to stdout
   - [x] Stroke width
   - [x] Density minimum and maximum (range of how many circles to include)  
   - [x] Random seed for srand and rand functions

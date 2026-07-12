@@ -104,6 +104,7 @@ struct Args {
   uint64_t seed;
   char *outfile;
   uint8_t verbose;
+  uint8_t toStdout;
 };
 
 struct Args createDefaultArgs() {
@@ -119,7 +120,8 @@ struct Args createDefaultArgs() {
     .seed = (uint64_t)time(NULL),
     .strokeWidth = DEFAULT_STROKE_WIDTH,
     .outfile = DEFAULT_FILE_NAME,
-    .verbose = 0
+    .verbose = 0,
+    .toStdout = 0
   };
 }
 
@@ -140,7 +142,7 @@ struct Args parseCLIArgs(int argc, char **argv) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "h:w:d:D:s:S:r:R:c:C:o:v")) != -1) {
+  while ((c = getopt(argc, argv, "h:w:d:D:s:S:r:R:c:C:o:vO")) != -1) {
     switch (c) {
       case 'h':
         args.height = atoi(optarg);
@@ -186,6 +188,10 @@ struct Args parseCLIArgs(int argc, char **argv) {
         break;
       case 'v':
         args.verbose = 1;
+        break;
+      case 'O':
+        args.toStdout = 1;
+        break;
     }
   }
 
@@ -296,6 +302,14 @@ void writePPMToDescriptor(FILE *fd, struct Args args, struct ColorBuffer buffer)
   fwrite(buffer.pixels, sizeof(struct Color), buffer.height * buffer.width, fd);
 }
 
+FILE *getDescriptor(struct Args args) {
+  if (args.toStdout) {
+    return stdout;
+  } else {
+    return fopen(args.outfile, "wb");
+  }
+}
+
 #ifndef JOMON_LIBRARY
 
 int main(int argc, char *argv[]) {
@@ -335,7 +349,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  FILE *file = fopen(args.outfile, "wb");
+  FILE *file = getDescriptor(args);
   if (file == NULL) exit(1);
 
   writePPMToDescriptor(file, args, imageBuffer);
