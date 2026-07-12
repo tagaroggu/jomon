@@ -147,7 +147,7 @@ struct Args parseCLIArgs(int argc, char **argv) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "h:w:d:D:s:S:c:C:o:v")) != -1) {
+  while ((c = getopt(argc, argv, "h:w:d:D:s:S:r:R:c:C:o:v")) != -1) {
     switch (c) {
       case 'h':
         args.height = atoi(optarg);
