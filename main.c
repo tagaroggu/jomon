@@ -12,38 +12,47 @@
 #include <string.h>
 #include <inttypes.h>
 
+// Width of the output image in pixels
 #ifndef DEFAULT_WIDTH
 #define DEFAULT_WIDTH 1920
 #endif
 
+// Height of the output image in pixels
 #ifndef DEFAULT_HEIGHT
 #define DEFAULT_HEIGHT 1080
 #endif
 
+// WIdth of the lines
 #ifndef DEFAULT_STROKE_WIDTH
 #define DEFAULT_STROKE_WIDTH 3
 #endif
 
+// Darker, "background" color
 #ifndef DEFAULT_BG_COLOR
 #define DEFAULT_BG_COLOR (struct Color){0x54, 0x44, 0x2B}
 #endif
 
+// Lighter "foreground" color
 #ifndef DEFAULT_FG_COLOR
 #define DEFAULT_FG_COLOR (struct Color){0xA9, 0x71, 0x4B}
 #endif
 
+// Minimum density (count) of circles
 #ifndef DEFAULT_MIN_DENSITY
 #define DEFAULT_MIN_DENSITY 25
 #endif
 
+// Maximum density (count) of circles
 #ifndef DEFAULT_MAX_DENSITY
 #define DEFAULT_MAX_DENSITY 100
 #endif
 
+// Seed to use for random number generation
 #ifndef DEFAULT_SEED
 #define DEFAULT_SEED time(NULL)
 #endif
 
+// Name to output file to
 #ifndef DEFAULT_FILE_NAME
 #define DEFAULT_FILE_NAME ({ char timeStr[256]; \
   snprintf(timeStr, 256, "%lu", time(NULL)); \
@@ -51,26 +60,32 @@
   snprintf(_temp, strLen, "./jomon-%s.ppm", timeStr); _temp; })
 #endif
 
+// Minimum radius (size) of circles
 #ifndef DEFAULT_MIN_RADIUS
 #define DEFAULT_MIN_RADIUS 5
 #endif
 
+// Maximum radius (size) of circles
 #ifndef DEFAULT_MAX_RADIUS
 #define DEFAULT_MAX_RADIUS 75
 #endif
 
+// Triple for colors
 struct Color {
   uint8_t red;
   uint8_t green;
   uint8_t blue;
 };
 
+// Size of a given area of pixels and pointer
+// to the first of a buffer of the pixels
 struct ColorBuffer {
   size_t width;
   size_t height;
   struct Color *pixels;
 };
 
+// Creates and returns a ColorBuffer with an allocated buffer for Colors
 struct ColorBuffer createImageBuffer(size_t width, size_t height) {
   return (struct ColorBuffer){
     .width = width,
@@ -79,18 +94,21 @@ struct ColorBuffer createImageBuffer(size_t width, size_t height) {
   };
 }
 
+// Gets a reference to a color by its index
 struct Color *getColorAtIndex(struct ColorBuffer buffer, size_t index) {
   if (index >= buffer.width * buffer.height)
     return NULL;
   return &buffer.pixels[index];
 }
 
+// Gets a reference to a color by its coordinates
 struct Color *getColorAtCoordinates(struct ColorBuffer buffer, size_t x, size_t y) {
   if (x < 0 || y < 0 || x >= buffer.width || y >= buffer.height)
     return NULL;
   return getColorAtIndex(buffer, x + (y * buffer.width));
 }
 
+// Arguments that can be configured for creating an image
 struct Args {
   size_t height;
   size_t width;
@@ -107,6 +125,7 @@ struct Args {
   uint8_t toStdout;
 };
 
+// Creates and returns an Args struct of default arguments
 struct Args createDefaultArgs() {
   return (struct Args){
     .height = DEFAULT_HEIGHT,
@@ -137,6 +156,11 @@ struct Args createDefaultArgs() {
 // c: dark color
 // C: light color
 // o: outfile
+// v: verbose
+// O: print to stdout
+
+// Parses arguments passed to program to Args struct, uses defaults for
+// non-passed options.
 struct Args parseCLIArgs(int argc, char **argv) {
   struct Args args = createDefaultArgs();
 
@@ -198,17 +222,21 @@ struct Args parseCLIArgs(int argc, char **argv) {
   return args;
 }
 
+// Holds position and size of a Circle
 struct Circle {
   size_t x;
   size_t y;
   unsigned int radius;
 };
 
+// Holds an array of circles and how many there are
 struct CircleBuffer {
   size_t length;
   struct Circle *firstCircle;
 };
 
+// Using RNG, generates a number of circles
+// within the bounds of density and radius
 struct CircleBuffer generateCircles(struct Args args) {
   struct CircleBuffer cb = (struct CircleBuffer){ 0 };
 
@@ -241,6 +269,7 @@ struct CircleBuffer generateCircles(struct Args args) {
   return cb;
 }
 
+// Compares circles for organizing with the smallest first
 int compareCircles(const void *A, const void *B) {
   struct Circle cA = *(struct Circle*)A;
   struct Circle cB = *(struct Circle*)B;
@@ -254,18 +283,24 @@ int compareCircles(const void *A, const void *B) {
   }
 }
 
+// Sorts circles by smallest radius
 void sortCircles(struct CircleBuffer *cb) {
   qsort(cb->firstCircle, cb->length, sizeof(struct Circle), compareCircles);
 }
 
+// Computes distances from points, used for distance from a given
+// pixel to the centerpoint of a circle
 float distance(size_t x1, size_t y1, size_t x2, size_t y2) {
   return sqrt(pow((int)(x2 - x1), 2) + pow((int)(y2 - y1), 2));
 }
 
+// Tests whether a circle is within the radius of a circle
 unsigned char inCircleRadius(size_t x, size_t y, struct Circle circle, unsigned int strokeWidth) {
   return distance(x, y, circle.x, circle.y) <= circle.radius * strokeWidth;
 }
 
+// Runs for every pixel, checking its location relative to the circles and
+// Returning a color based on the result of the check.
 struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBuffer circles) {
   // Check if we are in a circle and if so, do the math within the loop and break out of it
   for (int i = 0; i < circles.length; i++) {
@@ -295,6 +330,7 @@ struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBu
   }
 }
 
+// Writes out PPM information to a file descriptor
 void writePPMToDescriptor(FILE *fd, struct Args args, struct ColorBuffer buffer) {
   fprintf(fd, "P6\n");
   fprintf(fd, "%lu %lu\n", args.width, args.height);
@@ -302,6 +338,7 @@ void writePPMToDescriptor(FILE *fd, struct Args args, struct ColorBuffer buffer)
   fwrite(buffer.pixels, sizeof(struct Color), buffer.height * buffer.width, fd);
 }
 
+// Returns stdout if -O is passed to program, otherwise opens a file
 FILE *getDescriptor(struct Args args) {
   if (args.toStdout) {
     return stdout;
