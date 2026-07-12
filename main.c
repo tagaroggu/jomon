@@ -333,6 +333,8 @@ int main(int argc, char *argv[]) {
 
   writePPMToDescriptor(file, args, imageBuffer);
   
+  fclose(file);
+  
   return 0;
 }
 
