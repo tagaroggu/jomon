@@ -30,7 +30,7 @@ The current defaults are defined as macros in the code. I plan to add them to th
   - [x] Height and width
   - [x] Dark and Light colors
   - [x] Output file name
-      - [x] (Maybe) also allow outputting to stdout
+    - [x] (Maybe) also allow outputting to stdout
   - [x] Stroke width
   - [x] Density minimum and maximum (range of how many circles to include)  
   - [x] Random seed for srand and rand functions
@@ -45,7 +45,8 @@ The current defaults are defined as macros in the code. I plan to add them to th
   - [x] In-code docs
   - [ ] CLI args docs
   - [x] (Better) README docs
-- [ ] Add slight horizontal movement to columns randomly
+- [ ] Add slight horizontal movement to columns
+- [ ] (Maybe) Add random low chance for pixels to be the opposite color
 
 ## What the program *should* be structured like
 
@@ -58,3 +59,4 @@ The current defaults are defined as macros in the code. I plan to add them to th
 - Generate final PPM file data from buffer and some metadata
 - Put PPM file data into where it belongs
 - Print to stdout the filename (unless output is put to stdout)
+
