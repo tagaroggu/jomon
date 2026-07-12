@@ -91,13 +91,6 @@ struct Color *getColorAtCoordinates(struct ColorBuffer buffer, size_t x, size_t 
   return getColorAtIndex(buffer, x + (y * buffer.width));
 }
 
-// TODO: Implment
-char *convertBufferToPPM(struct ColorBuffer *buffer) {
-  exit(1);
-
-  return NULL;
-}
-
 struct Args {
   size_t height;
   size_t width;
