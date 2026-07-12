@@ -215,10 +215,17 @@ struct CircleBuffer generateCircles(struct Args args) {
     buffer[i].y = rand() % args.height;
     buffer[i].radius = (rand() % (args.maxRadius + 1 - args.minRadius)) + args.minRadius;
     if (buffer[i].radius % 2 == 0) {
-      if (buffer[i].radius + 1 > args.maxRadius) {
+      /*if (buffer[i].radius + 1 > args.maxRadius) {
         buffer[i].radius -= 1;
       } else {
         buffer[i].radius += 1;
+      }*/
+      if (buffer[i].radius + 1 > args.maxRadius) {
+        buffer[i].radius -= 1;
+      } else if (buffer[i].radius - 1 < args.minRadius) {
+        buffer[i].radius += 1;
+      } else {
+        buffer[i].radius += i % 2 ? 1 : -1;
       }
     }
   }
