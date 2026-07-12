@@ -21,7 +21,7 @@
 #endif
 
 #ifndef DEFAULT_STROKE_WIDTH
-#define DEFAULT_STROKE_WIDTH 5
+#define DEFAULT_STROKE_WIDTH 10
 #endif
 
 #ifndef DEFAULT_BG_COLOR
@@ -33,11 +33,11 @@
 #endif
 
 #ifndef DEFAULT_MIN_DENSITY
-#define DEFAULT_MIN_DENSITY 5
+#define DEFAULT_MIN_DENSITY 50
 #endif
 
 #ifndef DEFAULT_MAX_DENSITY
-#define DEFAULT_MAX_DENSITY 20
+#define DEFAULT_MAX_DENSITY 100
 #endif
 
 #ifndef DEFAULT_SEED
