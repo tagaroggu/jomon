@@ -3,6 +3,7 @@
  * distance to the center and therefore the pixel's color, otherwise which
  * column it is in and which color to match the column that it is in.
  */
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,16 +79,16 @@ struct ColorBuffer createImageBuffer(size_t width, size_t height) {
   };
 }
 
-struct Color *getColorAtIndex(struct ColorBuffer *buffer, size_t index) {
-  if (index >= buffer->width * buffer->height)
+struct Color *getColorAtIndex(struct ColorBuffer buffer, size_t index) {
+  if (index >= buffer.width * buffer.height)
     return NULL;
-  return &buffer->pixels[index];
+  return &buffer.pixels[index];
 }
 
-struct Color *getColorAtCoordinates(struct ColorBuffer *buffer, size_t x, size_t y) {
-  if (x < 0 || y < 0 || x >= buffer->width || y >= buffer->height)
+struct Color *getColorAtCoordinates(struct ColorBuffer buffer, size_t x, size_t y) {
+  if (x < 0 || y < 0 || x >= buffer.width || y >= buffer.height)
     return NULL;
-  return getColorAtIndex(buffer, x + (y * buffer->width));
+  return getColorAtIndex(buffer, x + (y * buffer.width));
 }
 
 // TODO: Implment
@@ -244,6 +245,42 @@ void sortCircles(struct CircleBuffer *cb) {
   qsort(cb->firstCircle, cb->length, sizeof(struct Circle), compareCircles);
 }
 
+float distance(size_t x1, size_t y1, size_t x2, size_t y2) {
+  return sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2));
+}
+
+unsigned char inCircleRadius(size_t x, size_t y, struct Circle circle) {
+  return distance(x, y, circle.x, circle.y) <= circle.radius;
+}
+
+struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBuffer circles) {
+  // Check if we are in a circle and if so, do the math within the loop and break out of it
+  for (int i = 0; i < circles.length; i++) {
+    if (inCircleRadius(x, y, circles.firstCircle[i])) {
+      float dist = distance(x, y, circles.firstCircle[i].x, circles.firstCircle[i].y);
+      char oddOrEvenBand = ((int)(dist / args.strokeWidth)) % 2;
+
+      if (oddOrEvenBand) {
+        // Odd
+        return args.lightColor;
+      } else {
+        // Even
+        return args.darkColor;
+      }
+      
+    }
+  }
+
+  // Otherwise, do the math for columns here
+
+  char oddOrEvenColumn = (x / args.strokeWidth) % 2;
+  if (oddOrEvenColumn) {
+    // Odd
+    return args.lightColor;
+  } else {
+    return args.darkColor;
+  }
+}
 
 #ifndef JOMON_LIBRARY
 
@@ -268,6 +305,19 @@ int main(int argc, char *argv[]) {
   if (args.verbose) {
     for (int i = 0; i < circleBuffer.length; i++) {
       printf("Circle #%i: (%zu, %zu) and radius %i\n", i, circleBuffer.firstCircle[i].x, circleBuffer.firstCircle[i].y, circleBuffer.firstCircle[i].radius);
+    }
+  }
+
+  struct ColorBuffer imageBuffer = createImageBuffer(args.width, args.height);
+
+  for (int x = 0; x < args.width; x++) {
+    for (int y = 0; y < args.height; y++) {
+      struct Color pixColor = pixelFunction(x, y, args, circleBuffer);
+      struct Color *toPaint = getColorAtCoordinates(imageBuffer, x, y);
+
+      toPaint->red = pixColor.red;
+      toPaint->green = pixColor.green;
+      toPaint->blue = pixColor.blue;
     }
   }
 

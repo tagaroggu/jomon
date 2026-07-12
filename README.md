@@ -13,10 +13,10 @@ Jomon pottery-/Sheikah-inspired pattern image generator
   - [x] Density minimum and maximum (range of how many circles to include)  
   - [x] Random seed for srand and rand functions
 - [x] Implement random generator of circles (position and radius/diameter)
-- [ ] Implement shader-like function for determining the pixels
-  - [ ] Determine a given pixel's distance to the center of a circle and if the pixel is within that circle,
-    - [ ] If within the circle, use distance to determine pixel color
-    - [ ] If not within the circle, use x value to determine column and color based on column
+- [x] Implement shader-like function for determining the pixels
+  - [x] Determine a given pixel's distance to the center of a circle and if the pixel is within that circle,
+    - [x] If within the circle, use distance to determine pixel color
+    - [x] If not within the circle, use x value to determine column and color based on column
 - [ ] Makefile compiler flags
   - [ ] Default macro definitions in Makefile as variables for easy redefinition when compiling
 
