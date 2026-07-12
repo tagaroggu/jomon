@@ -45,6 +45,7 @@ The current defaults are defined as macros in the code. I plan to add them to th
   - [x] In-code docs
   - [ ] CLI args docs
   - [x] (Better) README docs
+- [ ] Add slight horizontal movement to columns randomly
 
 ## What the program *should* be structured like
 
