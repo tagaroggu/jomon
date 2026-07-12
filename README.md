@@ -8,8 +8,8 @@ Jomon pottery-/Sheikah-inspired pattern image generator
 
 Jomon creates a [ppm image](https://en.wikipedia.org/wiki/Netpbm) with a combination of default options and user supplied ones. Available options are:
 
-- `-h`: Height, in pixels
-- `-w`: Width, in pixels
+- `-y`: Height, in pixels
+- `-x`: Width, in pixels
 - `-d`: Minimum density (count) of circles
 - `-D`: Maximum density (count) of circles
 - `-r`: Minimum radius (size) of circles

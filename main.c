@@ -145,8 +145,8 @@ struct Args createDefaultArgs() {
 }
 
 // Flags:
-// h: height
-// w: width
+// y: height
+// x: width
 // d: min density
 // D: max density
 // r: min radius
@@ -166,12 +166,12 @@ struct Args parseCLIArgs(int argc, char **argv) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "h:w:d:D:s:S:r:R:c:C:o:vO")) != -1) {
+  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vO")) != -1) {
     switch (c) {
-      case 'h':
+      case 'y':
         args.height = atoi(optarg);
         break;
-      case 'w':
+      case 'x':
         args.width = atoi(optarg);
         break;
       case 'd':
