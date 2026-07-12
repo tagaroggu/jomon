@@ -4,6 +4,26 @@ Jomon pottery-/Sheikah-inspired pattern image generator
 
 ![Example image of Jomon output](./example.png)
 
+## Usage
+
+Jomon creates a [ppm image](https://en.wikipedia.org/wiki/Netpbm) with a combination of default options and user supplied ones. Available options are:
+
+- `-h`: Height, in pixels
+- `-w`: Width, in pixels
+- `-d`: Minimum density (count) of circles
+- `-D`: Maximum density (count) of circles
+- `-r`: Minimum radius (size) of circles
+- `-R`: Maximum radius (size) of circles
+- `-s`: Seed (default is the current time)
+- `-S`: Stroke width (line width)
+- `-c`: The darker "background" color
+- `-C`: The lighter "foreground" color
+- `-o`: What to name the output file (default is `jomon-${current time}.ppm`)
+- `-O`: Output bytes to stdout instead of file
+- `-v`: Verbose; gives information about random generation
+
+The current defaults are defined as macros in the code. I plan to add them to the Makefile for another way to configure them.
+
 ## Todos
 
 - [x] Allow command line arguments to be passed, with defaults for not passing them
