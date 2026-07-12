@@ -19,6 +19,10 @@ Jomon pottery-/Sheikah-inspired pattern image generator
     - [x] If not within the circle, use x value to determine column and color based on column
 - [ ] Makefile compiler flags
   - [ ] Default macro definitions in Makefile as variables for easy redefinition when compiling
+- [ ] Documentation
+  - [ ] In-code docs
+  - [ ] CLI args docs
+  - [ ] (Better) README docs
 
 ## What the program *should* be structured like
 

@@ -25,11 +25,11 @@
 #endif
 
 #ifndef DEFAULT_BG_COLOR
-#define DEFAULT_BG_COLOR (struct Color){0, 0, 0}
+#define DEFAULT_BG_COLOR (struct Color){0x54, 0x44, 0x2B}
 #endif
 
 #ifndef DEFAULT_FG_COLOR
-#define DEFAULT_FG_COLOR (struct Color){255, 255, 255}
+#define DEFAULT_FG_COLOR (struct Color){0xA9, 0x71, 0x4B}
 #endif
 
 #ifndef DEFAULT_MIN_DENSITY
@@ -246,17 +246,17 @@ void sortCircles(struct CircleBuffer *cb) {
 }
 
 float distance(size_t x1, size_t y1, size_t x2, size_t y2) {
-  return sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2));
+  return sqrt(pow((int)(x2 - x1), 2) + pow((int)(y2 - y1), 2));
 }
 
-unsigned char inCircleRadius(size_t x, size_t y, struct Circle circle) {
-  return distance(x, y, circle.x, circle.y) <= circle.radius;
+unsigned char inCircleRadius(size_t x, size_t y, struct Circle circle, unsigned int strokeWidth) {
+  return distance(x, y, circle.x, circle.y) <= circle.radius * strokeWidth;
 }
 
 struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBuffer circles) {
   // Check if we are in a circle and if so, do the math within the loop and break out of it
   for (int i = 0; i < circles.length; i++) {
-    if (inCircleRadius(x, y, circles.firstCircle[i])) {
+    if (inCircleRadius(x, y, circles.firstCircle[i], args.strokeWidth)) {
       float dist = distance(x, y, circles.firstCircle[i].x, circles.firstCircle[i].y);
       char oddOrEvenBand = ((int)(dist / args.strokeWidth)) % 2;
 
@@ -280,6 +280,13 @@ struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBu
   } else {
     return args.darkColor;
   }
+}
+
+void writePPMToDescriptor(FILE *fd, struct Args args, struct ColorBuffer buffer) {
+  fprintf(fd, "P6\n");
+  fprintf(fd, "%lu %lu\n", args.width, args.height);
+  fprintf(fd, "255\n");
+  fwrite(buffer.pixels, sizeof(struct Color), buffer.height * buffer.width, fd);
 }
 
 #ifndef JOMON_LIBRARY
@@ -321,7 +328,11 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  exit(1);
+  FILE *file = fopen(args.outfile, "wb");
+  if (file == NULL) exit(1);
+
+  writePPMToDescriptor(file, args, imageBuffer);
+  
   return 0;
 }
 

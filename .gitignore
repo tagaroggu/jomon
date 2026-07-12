@@ -6,3 +6,4 @@
 *.out
 jomon
 .DS_Store
+*.ppm
