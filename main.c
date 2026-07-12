@@ -352,7 +352,7 @@ FILE *getDescriptor(struct Args args) {
 int main(int argc, char *argv[]) {
   struct Args args = parseCLIArgs(argc, argv);
 
-  if (args.verbose) {
+  if (args.verbose && !args.toStdout) {
     printf("Dimensions: %zux%zu\n", args.height, args.width);
     printf("Density range: %i-%i\n", args.minDensity, args.maxDensity);
     printf("seed: %" PRId64 "\n", args.seed);
@@ -367,7 +367,7 @@ int main(int argc, char *argv[]) {
   struct CircleBuffer circleBuffer = generateCircles(args);
   sortCircles(&circleBuffer);
 
-  if (args.verbose) {
+  if (args.verbose && !args.toStdout) {
     for (int i = 0; i < circleBuffer.length; i++) {
       printf("Circle #%i: (%zu, %zu) and radius %i\n", i, circleBuffer.firstCircle[i].x, circleBuffer.firstCircle[i].y, circleBuffer.firstCircle[i].radius);
     }
