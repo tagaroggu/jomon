@@ -21,7 +21,7 @@
 #endif
 
 #ifndef DEFAULT_STROKE_WIDTH
-#define DEFAULT_STROKE_WIDTH 10
+#define DEFAULT_STROKE_WIDTH 3
 #endif
 
 #ifndef DEFAULT_BG_COLOR
@@ -52,11 +52,11 @@
 #endif
 
 #ifndef DEFAULT_MIN_RADIUS
-#define DEFAULT_MIN_RADIUS 3
+#define DEFAULT_MIN_RADIUS 10
 #endif
 
 #ifndef DEFAULT_MAX_RADIUS
-#define DEFAULT_MAX_RADIUS 12
+#define DEFAULT_MAX_RADIUS 50
 #endif
 
 struct Color {
@@ -221,6 +221,13 @@ struct CircleBuffer generateCircles(struct Args args) {
     buffer[i].x = rand() % args.width;
     buffer[i].y = rand() % args.height;
     buffer[i].radius = (rand() % (args.maxRadius + 1 - args.minRadius)) + args.minRadius;
+    if (buffer[i].radius % 2 == 0) {
+      if (buffer[i].radius + 1 > args.maxRadius) {
+        buffer[i].radius -= 1;
+      } else {
+        buffer[i].radius += 1;
+      }
+    }
   }
 
   cb.firstCircle = buffer;
