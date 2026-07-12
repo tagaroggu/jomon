@@ -42,9 +42,9 @@ The current defaults are defined as macros in the code. I plan to add them to th
 - [ ] Makefile compiler flags
   - [ ] Default macro definitions in Makefile as variables for easy redefinition when compiling
 - [ ] Documentation
-  - [ ] In-code docs
+  - [x] In-code docs
   - [ ] CLI args docs
-  - [ ] (Better) README docs
+  - [x] (Better) README docs
 
 ## What the program *should* be structured like
 
