@@ -37,7 +37,7 @@
 #endif
 
 #ifndef DEFAULT_MAX_DENSITY
-#define DEFAULT_MAX_DENSITY 90
+#define DEFAULT_MAX_DENSITY 100
 #endif
 
 #ifndef DEFAULT_SEED
@@ -52,11 +52,11 @@
 #endif
 
 #ifndef DEFAULT_MIN_RADIUS
-#define DEFAULT_MIN_RADIUS 10
+#define DEFAULT_MIN_RADIUS 5
 #endif
 
 #ifndef DEFAULT_MAX_RADIUS
-#define DEFAULT_MAX_RADIUS 50
+#define DEFAULT_MAX_RADIUS 75
 #endif
 
 struct Color {
@@ -334,7 +334,7 @@ int main(int argc, char *argv[]) {
   writePPMToDescriptor(file, args, imageBuffer);
   
   fclose(file);
-  
+
   return 0;
 }
 
