@@ -367,6 +367,10 @@ struct Color distanceColor(float distance, struct Args args) {
   return ((int)(distance / args.strokeWidth)) % 2 ? args.lightColor : args.darkColor;
 }
 
+struct Color columnColor(size_t x, struct Args args) {
+  return (x / args.strokeWidth) % 2 ? args.lightColor : args.darkColor;
+}
+
 // Runs for every pixel, checking its location relative to the circles and
 // to the edges, eturning a color based on the result of the check.
 struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBuffer circles) {
@@ -388,14 +392,7 @@ struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBu
   }
 
   // Otherwise, do the math for columns here
-
-  bool oddOrEvenColumn = (x / args.strokeWidth) % 2;
-  if (oddOrEvenColumn) {
-    // Odd
-    return args.lightColor;
-  } else {
-    return args.darkColor;
-  }
+  return columnColor(x, args);
 }
 
 // Writes out PPM information to a file descriptor
