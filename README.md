@@ -56,7 +56,7 @@ The current defaults are defined as macros in the code. I plan to add them to th
 - [ ] (Maybe) Refine render function to allow dark and light sections to have different stroke widths
 - [x] Add option to draw a border around image
 - [ ] (Maybe) Refactor arguments parsing to take longer names as well (`getopt_long`)
-- [ ] Move verbose logs to the functions that handle the information printed
+- [x] Move verbose logs to the functions that handle the information printed
 - [ ] Refactor to split out the different parts of the pixelFunction into separate functions
 
 ## What the program *should* be structured like

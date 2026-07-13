@@ -93,6 +93,8 @@
 
 #define STRINGIFY(toString) #toString
 
+#define verboseLog(args, ...) if (args.verbose && !args.toStdout) { printf(__VA_ARGS__); }
+
 // Triple for colors
 struct Color {
   uint8_t red;
@@ -287,6 +289,20 @@ struct Args parseCLIArgs(int argc, char **argv) {
     }
   }
 
+  verboseLog(args, "Dimensions: %zux%zu\n", args.width, args.height);
+  verboseLog(args, "Density range: %i-%i\n", args.minDensity, args.maxDensity);
+  verboseLog(args, "Radius range: %i-%i\n", args.minDensity, args.maxDensity);
+  verboseLog(args, "Stroke width: %i\n", args.strokeWidth);
+  verboseLog(args, "Border count: %i\n", args.borderCount);
+  verboseLog(args, "Wave dimensions: %ix%i\n", args.waveWidth, args.waveHeight);
+  verboseLog(args, "Outfile: %s\n", args.outfile);
+  verboseLog(args, "Print to stdout: %i\n", args.toStdout);
+  verboseLog(args, "Dark color: 0x%x%x%x\n", args.darkColor.red, args.darkColor.green, args.darkColor.blue);
+  verboseLog(args, "Light color: 0x%x%x%x\n", args.lightColor.red, args.lightColor.green, args.lightColor.blue);
+  verboseLog(args, "Seed: %llu\n", args.seed);
+  verboseLog(args, "Verbose: %i\n", args.verbose);
+
+
   return args;
 }
 
@@ -310,6 +326,8 @@ struct CircleBuffer generateCircles(struct Args args) {
 
   cb.length = (rand() % (args.maxDensity + 1 - args.minDensity)) + args.minDensity;
 
+  verboseLog(args, "Generating %zu circles\n", cb.length);
+
   struct Circle *buffer = (struct Circle*)malloc(sizeof(struct Circle) * cb.length);
 
   for (int i = 0; i < cb.length; i++) {
@@ -329,6 +347,8 @@ struct CircleBuffer generateCircles(struct Args args) {
       } else {
         buffer[i].radius += i % 2 ? 1 : -1;
       }
+
+      verboseLog(args, "Circle #%i: (%zu, %zu) radius: %i\n", i, buffer[i].x, buffer[i].y, buffer[i].radius);
     }
   }
 
@@ -423,6 +443,7 @@ struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBu
 
 // Writes out PPM information to a file descriptor
 void writePPMToDescriptor(FILE *fd, struct Args args, struct ColorBuffer buffer) {
+  verboseLog(args, "Writing to file \"%s\"\n", args.toStdout ? "stdout" : args.outfile);
   fprintf(fd, "P6\n");
   fprintf(fd, "%lu %lu\n", args.width, args.height);
   fprintf(fd, "255\n");
@@ -443,26 +464,10 @@ FILE *getDescriptor(struct Args args) {
 int main(int argc, char *argv[]) {
   struct Args args = parseCLIArgs(argc, argv);
 
-  if (args.verbose && !args.toStdout) {
-    printf("Dimensions: %zux%zu\n", args.height, args.width);
-    printf("Density range: %i-%i\n", args.minDensity, args.maxDensity);
-    printf("seed: %" PRId64 "\n", args.seed);
-    printf("strokeWidth: %i\n", args.strokeWidth);
-    printf("Dark color: 0x%02X%02X%02X\n", args.darkColor.red, args.darkColor.green, args.darkColor.blue);
-    printf("Light color: 0x%02X%02X%02X\n", args.lightColor.red, args.lightColor.green, args.lightColor.blue);
-    printf("outfile: %s\n", args.outfile);
-  }
-
   srand(args.seed);
 
   struct CircleBuffer circleBuffer = generateCircles(args);
   sortCircles(&circleBuffer);
-
-  if (args.verbose && !args.toStdout) {
-    for (int i = 0; i < circleBuffer.length; i++) {
-      printf("Circle #%i: (%zu, %zu) and radius %i\n", i, circleBuffer.firstCircle[i].x, circleBuffer.firstCircle[i].y, circleBuffer.firstCircle[i].radius);
-    }
-  }
 
   struct ColorBuffer imageBuffer = createImageBuffer(args.width, args.height);
 
