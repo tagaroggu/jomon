@@ -47,7 +47,7 @@ The current defaults are defined as macros in the code. I plan to add them to th
   - [x] (Better) README docs
 - [ ] Add slight perpendicular movement to columns
 - [ ] (Maybe) Add random low chance for pixels to be the opposite color
-- [ ] Swap to `-x` and `-y` for width and height respectively so `-h` can be help information
+- [x] Swap to `-x` and `-y` for width and height respectively so `-h` can be help information
 - [ ] (Maybe) Refine render function to allow dark and light sections to have different stroke widths
 - [ ] Add option to draw a border around image
 
