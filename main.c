@@ -52,6 +52,10 @@
 #define DEFAULT_SEED time(NULL)
 #endif
 
+#ifndef DEFAULT_BORDER_COUNT
+#define DEFAULT_BORDER_COUNT 0
+#endif
+
 // Name to output file to
 #ifndef DEFAULT_FILE_NAME
 #define DEFAULT_FILE_NAME ({ char timeStr[256]; \
@@ -125,6 +129,7 @@ struct Args {
   char *outfile;
   uint8_t verbose;
   uint8_t toStdout;
+  unsigned int borderCount;
 };
 
 // Creates and returns an Args struct of default arguments
@@ -142,7 +147,8 @@ struct Args createDefaultArgs() {
     .strokeWidth = DEFAULT_STROKE_WIDTH,
     .outfile = DEFAULT_FILE_NAME,
     .verbose = 0,
-    .toStdout = 0
+    .toStdout = 0,
+    .borderCount = DEFAULT_BORDER_COUNT
   };
 }
 
@@ -164,7 +170,7 @@ void printHelp() {
   printf("\t-v: Verbose, gives additional infomation during image generation\n");
   printf("\t-O: puts image bytes to stdout, ignores outfile if enabled\n");
   printf("\t-h: Prints this help info and exits\n");
-
+  printf("\t-b: Adds a border around the edges of the image, defaults to %i, 0 disables it\n", DEFAULT_BORDER_COUNT);
 }
 
 // Flags:
@@ -182,6 +188,7 @@ void printHelp() {
 // v: verbose
 // O: print to stdout
 // h: print help and exit
+// b: border count
 
 // Parses arguments passed to program to Args struct, uses defaults for
 // non-passed options.
@@ -190,7 +197,7 @@ struct Args parseCLIArgs(int argc, char **argv) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vOh")) != -1) {
+  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vOhb:")) != -1) {
     switch (c) {
       case 'y':
         args.height = atoi(optarg);
@@ -243,6 +250,9 @@ struct Args parseCLIArgs(int argc, char **argv) {
       case 'h':
         printHelp();
         exit(0);
+        break;
+      case 'b':
+        args.borderCount = atoi(optarg);
         break;
     }
   }
@@ -328,8 +338,29 @@ unsigned char inCircleRadius(size_t x, size_t y, struct Circle circle, unsigned 
 }
 
 // Runs for every pixel, checking its location relative to the circles and
-// Returning a color based on the result of the check.
+// to the edges, eturning a color based on the result of the check.
 struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBuffer circles) {
+  // Border function stuffs:
+
+  if (args.borderCount) {
+    int topDist = y;
+    int bottomDist = args.height - y - 1;
+    int leftDist = x;
+    int rightDist = args.width - x - 1;
+
+      if (topDist < args.borderCount * args.strokeWidth ||
+          bottomDist < args.borderCount * args.strokeWidth ||
+          leftDist < args.borderCount * args.strokeWidth ||
+          rightDist < args.borderCount * args.strokeWidth) {
+            int smallestDist = topDist;
+            smallestDist = smallestDist < bottomDist ? smallestDist : bottomDist;
+            smallestDist = smallestDist < leftDist ? smallestDist : leftDist;
+            smallestDist = smallestDist < rightDist ? smallestDist : rightDist;
+            
+            return ((smallestDist / args.strokeWidth)) % 2 ? args.lightColor : args.darkColor;
+          }
+  }
+
   // Check if we are in a circle and if so, do the math within the loop and break out of it
   for (int i = 0; i < circles.length; i++) {
     if (inCircleRadius(x, y, circles.firstCircle[i], args.strokeWidth)) {
@@ -422,7 +453,7 @@ int main(int argc, char *argv[]) {
   fclose(file);
 
   if (!args.toStdout) {
-    printf("%s", args.outfile);
+    printf("%s\n", args.outfile);
   }
 
   return 0;

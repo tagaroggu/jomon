@@ -21,6 +21,8 @@ Jomon creates a [ppm image](https://en.wikipedia.org/wiki/Netpbm) with a combina
 - `-o`: What to name the output file (default is `jomon-${current time}.ppm`)
 - `-O`: Output bytes to stdout instead of file
 - `-v`: Verbose; gives information about random generation
+- `-h`: Prints a help message and exits
+- `-b`: Number of rounds (stripes) of the border, 0 disables it
 
 The current defaults are defined as macros in the code. I plan to add them to the Makefile for another way to configure them.
 
@@ -49,7 +51,7 @@ The current defaults are defined as macros in the code. I plan to add them to th
 - [ ] (Maybe) Add random low chance for pixels to be the opposite color
 - [x] Swap to `-x` and `-y` for width and height respectively so `-h` can be help information
 - [ ] (Maybe) Refine render function to allow dark and light sections to have different stroke widths
-- [ ] Add option to draw a border around image
+- [x] Add option to draw a border around image
 
 ## What the program *should* be structured like
 
