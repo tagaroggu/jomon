@@ -12,6 +12,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include <math.h>
 
 // Width of the output image in pixels
 #ifndef DEFAULT_WIDTH
@@ -364,10 +365,13 @@ size_t borderDistance(size_t x, size_t y, struct Args args) {
 }
 
 struct Color distanceColor(float distance, struct Args args) {
-  return ((int)(distance / args.strokeWidth)) % 2 ? args.lightColor : args.darkColor;
+  return ((int)((distance) / args.strokeWidth)) % 2 ? args.lightColor : args.darkColor;
 }
 
 struct Color columnColor(size_t x, size_t y, struct Args args) {
+  #ifdef JOMON_COLUMN_BETA
+  x += round(10.0f * sin(((float)y / 50.0f) * M_PI));
+  #endif
   return (x / args.strokeWidth) % 2 ? args.lightColor : args.darkColor;
 }
 
