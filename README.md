@@ -4,7 +4,7 @@ Jomon pottery-/Sheikah-inspired pattern image generator
 
 ![Example image of Jomon output](./examples/example.png)
 ![Another example image of Jomon output, with a border and colors like the ocean](./examples/ocean.png)
-
+![Another example, with waves](./examples/blood.png)
 ## Usage
 
 Jomon creates a [ppm image](https://en.wikipedia.org/wiki/Netpbm) with a combination of default options and user supplied ones. Available options are:
@@ -24,6 +24,8 @@ Jomon creates a [ppm image](https://en.wikipedia.org/wiki/Netpbm) with a combina
 - `-v`: Verbose; gives information about random generation
 - `-h`: Prints a help message and exits
 - `-b`: Number of rounds (stripes) of the border, 0 disables it
+- `-W`: Wave height, how tall a cycle of the wave is in the columns
+- `-w`: Wave width, how wide a wave is/how far it travels horizontally in the columns
 
 The current defaults are defined as macros in the code. I plan to add them to the Makefile for another way to configure them.
 
@@ -48,7 +50,7 @@ The current defaults are defined as macros in the code. I plan to add them to th
   - [x] In-code docs
   - [x] CLI args docs
   - [x] (Better) README docs
-- [ ] Add slight perpendicular movement to columns
+- [x] Add slight perpendicular movement to columns
 - [ ] (Maybe) Add random low chance for pixels to be the opposite color
 - [x] Swap to `-x` and `-y` for width and height respectively so `-h` can be help information
 - [ ] (Maybe) Refine render function to allow dark and light sections to have different stroke widths

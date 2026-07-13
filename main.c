@@ -76,6 +76,14 @@
 #define DEFAULT_MAX_RADIUS 75
 #endif
 
+#ifndef DEFAULT_WAVE_WIDTH
+#define DEFAULT_WAVE_WIDTH 3
+#endif
+
+#ifndef DEFAULT_WAVE_HEIGHT
+#define DEFAULT_WAVE_HEIGHT 50
+#endif
+
 #ifdef JOMON_RANDOM_SORT
 #undef JOMON_RANDOM_SORT
 #define JOMON_RANDOM_SORT 1
@@ -131,6 +139,8 @@ struct Args {
   unsigned int maxDensity;
   unsigned int minRadius;
   unsigned int maxRadius;
+  int waveWidth;
+  int waveHeight;
   unsigned int strokeWidth;
   struct Color darkColor;
   struct Color lightColor;
@@ -150,6 +160,8 @@ struct Args createDefaultArgs() {
     .maxDensity = DEFAULT_MAX_DENSITY,
     .minRadius = DEFAULT_MIN_RADIUS,
     .maxRadius = DEFAULT_MAX_RADIUS,
+    .waveWidth = DEFAULT_WAVE_WIDTH,
+    .waveHeight = DEFAULT_WAVE_HEIGHT,
     .darkColor = DEFAULT_BG_COLOR,
     .lightColor = DEFAULT_FG_COLOR,
     .seed = (uint64_t)time(NULL),
@@ -180,6 +192,8 @@ void printHelp() {
   printf("\t-O: puts image bytes to stdout, ignores outfile if enabled\n");
   printf("\t-h: Prints this help info and exits\n");
   printf("\t-b: Adds a border around the edges of the image, defaults to %i, 0 disables it\n", DEFAULT_BORDER_COUNT);
+  printf("\t-W: Wave height, how long a wave cycle is, default is %i\n", DEFAULT_WAVE_HEIGHT);
+  printf("\t-w: Wave width, how far left and right a wave travels, default is %i\n", DEFAULT_WAVE_WIDTH);
 }
 
 // Flags:
@@ -198,6 +212,8 @@ void printHelp() {
 // O: print to stdout
 // h: print help and exit
 // b: border count
+// W: wave height
+// w: wave width
 
 // Parses arguments passed to program to Args struct, uses defaults for
 // non-passed options.
@@ -206,7 +222,7 @@ struct Args parseCLIArgs(int argc, char **argv) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vOhb:")) != -1) {
+  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vOhb:W:w:")) != -1) {
     switch (c) {
       case 'y':
         args.height = atoi(optarg);
@@ -263,6 +279,11 @@ struct Args parseCLIArgs(int argc, char **argv) {
       case 'b':
         args.borderCount = atoi(optarg);
         break;
+      case 'W':
+        args.waveHeight = atoi(optarg);
+        break;
+      case 'w':
+        args.waveWidth = atoi(optarg);
     }
   }
 
@@ -369,10 +390,11 @@ struct Color distanceColor(float distance, struct Args args) {
 }
 
 struct Color columnColor(size_t x, size_t y, struct Args args) {
-  #ifdef JOMON_COLUMN_BETA
-  x += round(10.0f * sin(((float)y / 50.0f) * M_PI));
-  #endif
-  return (x / args.strokeWidth) % 2 ? args.lightColor : args.darkColor;
+  int newX = x;
+  if (args.waveWidth && args.waveHeight) {
+    newX += round((float)args.waveWidth * sin(((float)y / (float)args.waveHeight) * M_PI));
+  }
+  return (int)round((float)newX / args.strokeWidth) % 2 ? args.lightColor : args.darkColor;
 }
 
 // Runs for every pixel, checking its location relative to the circles and
