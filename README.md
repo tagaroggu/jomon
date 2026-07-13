@@ -52,6 +52,8 @@ The current defaults are defined as macros in the code. I plan to add them to th
 - [x] Swap to `-x` and `-y` for width and height respectively so `-h` can be help information
 - [ ] (Maybe) Refine render function to allow dark and light sections to have different stroke widths
 - [x] Add option to draw a border around image
+- [ ] (Maybe) Refactor arguments parsing to take longer names as well (`getopt_long`)
+- [ ] Move verbose logs to the functions that handle the information printed
 
 ## What the program *should* be structured like
 
