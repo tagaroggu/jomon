@@ -338,50 +338,47 @@ unsigned char inCircleRadius(size_t x, size_t y, struct Circle circle, unsigned 
   return distance(x, y, circle.x, circle.y) <= circle.radius * strokeWidth;
 }
 
+size_t borderDistance(size_t x, size_t y, struct Args args) {
+  size_t topDist = y;
+  size_t bottomDist = args.height - 1 - y;
+  size_t leftDist = x;
+  size_t rightDist = args.width - 1 - x;
+
+  size_t smallestDist = topDist;
+  smallestDist = smallestDist < bottomDist ? smallestDist : bottomDist;
+  smallestDist = smallestDist < leftDist ? smallestDist : leftDist;
+  smallestDist = smallestDist < rightDist ? smallestDist : rightDist;
+
+  return smallestDist;
+}
+
+struct Color distanceColor(float distance, struct Args args) {
+  return ((int)(distance / args.strokeWidth)) % 2 ? args.lightColor : args.darkColor;
+}
+
 // Runs for every pixel, checking its location relative to the circles and
 // to the edges, eturning a color based on the result of the check.
 struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBuffer circles) {
-  // Border function stuffs:
 
-  if (args.borderCount) {
-    int topDist = y;
-    int bottomDist = args.height - y - 1;
-    int leftDist = x;
-    int rightDist = args.width - x - 1;
-
-      if (topDist < args.borderCount * args.strokeWidth ||
-          bottomDist < args.borderCount * args.strokeWidth ||
-          leftDist < args.borderCount * args.strokeWidth ||
-          rightDist < args.borderCount * args.strokeWidth) {
-            int smallestDist = topDist;
-            smallestDist = smallestDist < bottomDist ? smallestDist : bottomDist;
-            smallestDist = smallestDist < leftDist ? smallestDist : leftDist;
-            smallestDist = smallestDist < rightDist ? smallestDist : rightDist;
-            
-            return ((smallestDist / args.strokeWidth)) % 2 ? args.lightColor : args.darkColor;
-          }
+  // Border
+  size_t bd = borderDistance(x, y, args);
+  if (bd < args.borderCount * args.strokeWidth) {
+    return distanceColor(bd, args);
   }
 
   // Check if we are in a circle and if so, do the math within the loop and break out of it
   for (int i = 0; i < circles.length; i++) {
     if (inCircleRadius(x, y, circles.firstCircle[i], args.strokeWidth)) {
       float dist = distance(x, y, circles.firstCircle[i].x, circles.firstCircle[i].y);
-      char oddOrEvenBand = ((int)(dist / args.strokeWidth)) % 2;
-
-      if (oddOrEvenBand) {
-        // Odd
-        return args.lightColor;
-      } else {
-        // Even
-        return args.darkColor;
-      }
+      
+      return distanceColor(dist, args);
       
     }
   }
 
   // Otherwise, do the math for columns here
 
-  char oddOrEvenColumn = (x / args.strokeWidth) % 2;
+  bool oddOrEvenColumn = (x / args.strokeWidth) % 2;
   if (oddOrEvenColumn) {
     // Odd
     return args.lightColor;
