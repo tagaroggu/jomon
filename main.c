@@ -75,6 +75,13 @@
 #define DEFAULT_MAX_RADIUS 75
 #endif
 
+#ifdef JOMON_RANDOM_SORT
+#undef JOMON_RANDOM_SORT
+#define JOMON_RANDOM_SORT 1
+#else
+#define JOMON_RANDOM_SORT 0
+#endif
+
 #define STRINGIFY(toString) #toString
 
 // Triple for colors
@@ -322,9 +329,13 @@ int compareCircles(const void *A, const void *B) {
   }
 }
 
+int randomCompareCircles(const void *_A, const void *_B) {
+  return (rand() % 3) - 1;
+}
+
 // Sorts circles by smallest radius
 void sortCircles(struct CircleBuffer *cb) {
-  qsort(cb->firstCircle, cb->length, sizeof(struct Circle), compareCircles);
+  qsort(cb->firstCircle, cb->length, sizeof(struct Circle), JOMON_RANDOM_SORT ? randomCompareCircles : compareCircles);
 }
 
 // Computes distances from points, used for distance from a given
