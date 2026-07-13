@@ -367,7 +367,7 @@ struct Color distanceColor(float distance, struct Args args) {
   return ((int)(distance / args.strokeWidth)) % 2 ? args.lightColor : args.darkColor;
 }
 
-struct Color columnColor(size_t x, struct Args args) {
+struct Color columnColor(size_t x, size_t y, struct Args args) {
   return (x / args.strokeWidth) % 2 ? args.lightColor : args.darkColor;
 }
 
@@ -392,7 +392,7 @@ struct Color pixelFunction(size_t x, size_t y, struct Args args, struct CircleBu
   }
 
   // Otherwise, do the math for columns here
-  return columnColor(x, args);
+  return columnColor(x, y, args);
 }
 
 // Writes out PPM information to a file descriptor
