@@ -41,9 +41,9 @@ The current defaults are defined as macros in the code. I plan to add them to th
     - [x] If not within the circle, use x value to determine column and color based on column
 - [ ] Makefile compiler flags
   - [ ] Default macro definitions in Makefile as variables for easy redefinition when compiling
-- [ ] Documentation
+- [x] Documentation
   - [x] In-code docs
-  - [ ] CLI args docs
+  - [x] CLI args docs
   - [x] (Better) README docs
 - [ ] Add slight perpendicular movement to columns
 - [ ] (Maybe) Add random low chance for pixels to be the opposite color

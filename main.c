@@ -70,6 +70,8 @@
 #define DEFAULT_MAX_RADIUS 75
 #endif
 
+#define STRINGIFY(toString) #toString
+
 // Triple for colors
 struct Color {
   uint8_t red;
@@ -144,6 +146,27 @@ struct Args createDefaultArgs() {
   };
 }
 
+void printHelp() {
+  printf("Jomon: a CLI program to generate jomon pottery-/BOTW-/TOTK-inspired patterns\n\n");
+
+  printf("Flags:\n");
+  printf("\t-y: Height of output image in pixels, default is %i\n", DEFAULT_HEIGHT);
+  printf("\t-x: Width of output image in pixels, default is %i\n", DEFAULT_WIDTH);
+  printf("\t-d: Minimum density (amount) of circles in image, default is %i\n", DEFAULT_MIN_DENSITY);
+  printf("\t-D: Maximum density (amount) of circles in image , default is %i\n", DEFAULT_MAX_DENSITY);
+  printf("\t-r: Minimum radius (size) of circles, rounds to an odd number, default is %i\n", DEFAULT_MIN_RADIUS);
+  printf("\t-R: Maximum radius (size) of circles, rounds to an odd number, default is %i\n", DEFAULT_MAX_RADIUS);
+  printf("\t-s: Sets the numerical seed of the random number generator, must be an integer number, default is the current time\n");
+  printf("\t-S: Stroke width (line width), default is %i\n", DEFAULT_STROKE_WIDTH);
+  printf("\t-c: Darker, \"background\" color, default is %s\n", STRINGIFY(DEFAULT_BG_COLOR));
+  printf("\t-C: Lighter, \"foreground\" color, default is %s\n", STRINGIFY(DEFAULT_FG_COLOR));
+  printf("\t-o: Outfile, where to put the resulting file, default is jomon-[current time].ppm\n");
+  printf("\t-v: Verbose, gives additional infomation during image generation\n");
+  printf("\t-O: puts image bytes to stdout, ignores outfile if enabled\n");
+  printf("\t-h: Prints this help info and exits\n");
+
+}
+
 // Flags:
 // y: height
 // x: width
@@ -158,6 +181,7 @@ struct Args createDefaultArgs() {
 // o: outfile
 // v: verbose
 // O: print to stdout
+// h: print help and exit
 
 // Parses arguments passed to program to Args struct, uses defaults for
 // non-passed options.
@@ -166,7 +190,7 @@ struct Args parseCLIArgs(int argc, char **argv) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vO")) != -1) {
+  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vOh")) != -1) {
     switch (c) {
       case 'y':
         args.height = atoi(optarg);
@@ -215,6 +239,10 @@ struct Args parseCLIArgs(int argc, char **argv) {
         break;
       case 'O':
         args.toStdout = 1;
+        break;
+      case 'h':
+        printHelp();
+        exit(0);
         break;
     }
   }
