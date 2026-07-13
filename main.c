@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 // Width of the output image in pixels
 #ifndef DEFAULT_WIDTH
@@ -127,8 +128,8 @@ struct Args {
   struct Color lightColor;
   uint64_t seed;
   char *outfile;
-  uint8_t verbose;
-  uint8_t toStdout;
+  bool verbose;
+  bool toStdout;
   unsigned int borderCount;
 };
 
