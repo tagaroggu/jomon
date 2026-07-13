@@ -2,7 +2,8 @@
 
 Jomon pottery-/Sheikah-inspired pattern image generator
 
-![Example image of Jomon output](./example.png)
+![Example image of Jomon output](./examples/example.png)
+![Another example image of Jomon output, with a border and colors like the ocean](./examples/ocean.png)
 
 ## Usage
 
