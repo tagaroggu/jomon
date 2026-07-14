@@ -84,11 +84,8 @@
 #define DEFAULT_WAVE_HEIGHT 50
 #endif
 
-#ifdef JOMON_RANDOM_SORT
-#undef JOMON_RANDOM_SORT
-#define JOMON_RANDOM_SORT 1
-#else
-#define JOMON_RANDOM_SORT 0
+#ifndef DEFAULT_USE_RANDOM_SORT
+#define DEFAULT_USE_RANDOM_SORT 0
 #endif
 
 #define STRINGIFY(toString) #toString
@@ -150,6 +147,7 @@ struct Args {
   char *outfile;
   bool verbose;
   bool toStdout;
+  bool randomSort;
   unsigned int borderCount;
 };
 
@@ -171,6 +169,7 @@ struct Args createDefaultArgs() {
     .outfile = DEFAULT_FILE_NAME,
     .verbose = 0,
     .toStdout = 0,
+    .randomSort = DEFAULT_USE_RANDOM_SORT,
     .borderCount = DEFAULT_BORDER_COUNT
   };
 }
@@ -196,6 +195,7 @@ void printHelp() {
   printf("\t-b: Adds a border around the edges of the image, defaults to %i, 0 disables it\n", DEFAULT_BORDER_COUNT);
   printf("\t-W: Wave height, how long a wave cycle is, default is %i\n", DEFAULT_WAVE_HEIGHT);
   printf("\t-w: Wave width, how far left and right a wave travels, default is %i\n", DEFAULT_WAVE_WIDTH);
+  printf("\t-1: Enable random sorter, instead of default which sorts by radius, default is %i", DEFAULT_USE_RANDOM_SORT);
 }
 
 // Flags:
@@ -224,7 +224,7 @@ struct Args parseCLIArgs(int argc, char **argv) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vOhb:W:w:")) != -1) {
+  while ((c = getopt(argc, argv, "y:x:d:D:s:S:r:R:c:C:o:vOhb:W:w:1")) != -1) {
     switch (c) {
       case 'y':
         args.height = atoi(optarg);
@@ -286,6 +286,9 @@ struct Args parseCLIArgs(int argc, char **argv) {
         break;
       case 'w':
         args.waveWidth = atoi(optarg);
+        break;
+      case '1':
+        args.randomSort = 1;
     }
   }
 
@@ -301,6 +304,7 @@ struct Args parseCLIArgs(int argc, char **argv) {
   verboseLog(args, "Light color: 0x%x%x%x\n", args.lightColor.red, args.lightColor.green, args.lightColor.blue);
   verboseLog(args, "Seed: %llu\n", args.seed);
   verboseLog(args, "Verbose: %i\n", args.verbose);
+  verboseLog(args, "Random sort: %i", args.randomSort);
 
 
   return args;
@@ -376,8 +380,8 @@ int randomCompareCircles(const void *_A, const void *_B) {
 }
 
 // Sorts circles by smallest radius
-void sortCircles(struct CircleBuffer *cb) {
-  qsort(cb->firstCircle, cb->length, sizeof(struct Circle), JOMON_RANDOM_SORT ? randomCompareCircles : compareCircles);
+void sortCircles(struct CircleBuffer *cb, struct Args args) {
+  qsort(cb->firstCircle, cb->length, sizeof(struct Circle), args.randomSort ? randomCompareCircles : compareCircles);
 }
 
 // Computes distances from points, used for distance from a given
@@ -467,7 +471,7 @@ int main(int argc, char *argv[]) {
   srand(args.seed);
 
   struct CircleBuffer circleBuffer = generateCircles(args);
-  sortCircles(&circleBuffer);
+  sortCircles(&circleBuffer, args);
 
   struct ColorBuffer imageBuffer = createImageBuffer(args.width, args.height);
 

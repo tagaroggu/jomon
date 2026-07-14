@@ -26,6 +26,7 @@ Jomon creates a [ppm image](https://en.wikipedia.org/wiki/Netpbm) with a combina
 - `-b`: Number of rounds (stripes) of the border, 0 disables it
 - `-W`: Wave height, how tall a cycle of the wave is in the columns
 - `-w`: Wave width, how wide a wave is/how far it travels horizontally in the columns
+- `-1`: Use random sorter instead of default size sorter
 
 The current defaults are defined as macros in the code. I plan to add them to the Makefile for another way to configure them.
 
